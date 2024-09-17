@@ -84,7 +84,6 @@ class SensorWorker:
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_message = self.on_message
         self.mqttc.on_disconnect = self.on_disconnect
-        # self.mqttc.will_set("custom_sensors/v1/status", "offline", qos=1, retain=True)
         self.mqttc.username_pw_set(self.mqtt_config['username'], self.mqtt_config['password'])
         self.mqttc.connect(self.mqtt_config['host'], self.mqtt_config['port'], 60)
         self.mqttc.loop_forever()
@@ -114,7 +113,6 @@ class SensorWorker:
         topic = msg_obj.topic
         data = msg_obj.payload.decode()
         data_parts = data.split("|")
-        # print(f"{topic}: {data}")
 
         if len(data_parts) >= 3:
             device_id = data_parts[0]
@@ -132,15 +130,12 @@ class SensorWorker:
             for sensor in self.sensors:
                 sensor_obj: Sensor = sensor
                 if sensor_obj.device_id == device_id and sensor_obj.sensor_name == sensor_name:
-                    # sensor_obj.sensor_value = sensor_value
                     found_sensor: Sensor = sensor_obj
                     break
 
             if not found_sensor:
                 sensor = Sensor(device_id=device_id, sensor_name=sensor_name, sensor_value=sensor_value, sensor_type=sensor_type)
                 self.configure_sensor(sensor)
-                # sleep(2)
-                # self.update_sensor(sensor)
             else:
                 found_sensor.update(sensor_value)
                 self.update_sensor(found_sensor)
@@ -174,7 +169,7 @@ class SensorWorker:
                 "identifiers": [sensor_obj.device_flat_name],
                 "name": sensor_obj.device_id,
                 "model": sensor_obj.sensor_type.name,
-                "manufacturer": "Fontana Software",
+                "manufacturer": "OpenSoft",
             }
         }
         if sensor_obj.sensor_type.command_topic and not sensor_obj.sensor_type.options and not sensor_obj.sensor_type.min and not sensor_obj.sensor_type.max:
@@ -208,7 +203,6 @@ class SensorWorker:
     def sensor_offline(self, sensor=None):
         sensor_obj: Sensor = sensor
         self.mqttc.publish(f"homeassistant/{sensor_obj.device_flat_name}_{sensor_obj.sensor_flat_name}/availability", "offline")
-        # remove sensor from list
         self.sensors.remove(sensor_obj)
         logger.info(f"Sensor [{sensor_obj.sensor_type.name}] '{sensor_obj.sensor_name}' offline")
 

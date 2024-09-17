@@ -36,9 +36,6 @@ See the below table for the sensor type options
 
 ```python
 # sensor_config.py
-
-# Add `command_topic` to the sensor_type if you want to make it a switch
-
 sensor_types = [
     {
         "name": "Ultrasonic",

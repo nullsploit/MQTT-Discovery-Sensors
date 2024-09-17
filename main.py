@@ -24,11 +24,3 @@ for sensor_type in sensor_types:
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 worker = SensorWorker(mqttc, sensor_type_objs, mqtt_config)
 worker.connect()
-
-# mqttc.on_connect = worker.on_connect
-# mqttc.on_message = worker.on_message
-# mqttc.on_disconnect = worker.on_disconnect
-# mqttc.will_set("custom_sensors/v1/status", "offline", qos=1, retain=True)
-# mqttc.username_pw_set(mqtt_config['username'], mqtt_config['password'])
-# mqttc.connect(mqtt_config['host'], mqtt_config['port'], 60)
-# mqttc.loop_forever()
